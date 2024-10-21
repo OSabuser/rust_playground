@@ -1,4 +1,6 @@
 //! Имитация работы системы спутниковой связи
+
+use std::fmt::format;
 struct BaseStation;
 
 impl BaseStation {
@@ -10,6 +12,10 @@ impl BaseStation {
     ) {
         to.mailbox.messages.push(message);
     }
+
+    fn connect(&self, sat_id: u32) -> CubeSat{
+        CubeSat::new(sat_id)
+    }
 }
 
 
@@ -18,6 +24,11 @@ struct CubeSat {
     sat_id: u32,
     mailbox: Mailbox,
 }
+
+fn fetch_sat_ids() -> Vec<u32> {
+    vec![1,2]
+}
+
 
 impl CubeSat {
     
@@ -51,25 +62,23 @@ struct Mailbox {
 enum StatusMessage {
     Ok,
 }
+#[derive(Debug)]
+struct Message {
+    to: u32,
+    content: String,
 
-type Message=String;
+}
 
 
 
 fn main() {
     let main_station = BaseStation {};
 
-    let mut sat_a = CubeSat::new(1);
-    let mut sat_b = CubeSat::new(2);
+    let sat_identificators = fetch_sat_ids();
 
-    main_station.send_message(&mut sat_a, "Hellow, sat_a!".to_string());
-    main_station.send_message(&mut sat_b, String::from("Баояо-баояо!"));
-
-    let current_message = sat_a.receive_message();
-    println!("Sat #{} has received: {:?}", sat_a.sat_id, current_message);
-    sat_a.check_status();
-
-    let current_message = sat_b.receive_message();
-    println!("Sat #{} has received: {:?}", sat_b.sat_id, current_message);
-    sat_b.check_status();
+    for id in sat_identificators {
+        let mut sat_instance = main_station.connect(id);
+        let id = sat_instance.sat_id;
+        main_station.send_message(&mut sat_instance, format!("Hello, #{}", id));
+    }
 }
