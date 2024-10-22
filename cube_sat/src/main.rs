@@ -1,52 +1,25 @@
 //! Имитация работы системы спутниковой связи
 
-struct BaseStation;
+use std::cell::RefCell;
+use std::rc::Rc;
 
 #[derive(Debug)]
-struct CubeSat {
-    sat_id: u32,
-}
-
-impl CubeSat {
-    fn new(id: u32) -> CubeSat {
-        CubeSat {
-            sat_id: id,
-        }
-    }
-    
-}
-
-impl Copy for CubeSat {}
-
-impl Clone for CubeSat {
-    fn clone(&self) -> Self{
-        CubeSat::new(self.sat_id)
-    }
-}
-
-
-/// Вывод текущего состояния спутника
-fn check_status(sat_id: CubeSat) {
-    let status = StatusMessage::Ok;
-    println!("Status of {:?} is {:?}", sat_id, status);
-}
-
-#[derive(Debug)]
-enum StatusMessage {
-    Ok,
-}
-impl Copy for StatusMessage {}
-
-impl Clone for StatusMessage {
-    fn clone(&self) -> Self {
-        *self
-    }
+struct BaseStation {
+    radio_frequency: u64,
 }
 
 fn main() {
-    let sat_a = CubeSat::new(32);
+    let base = Rc::new(RefCell::new(BaseStation {
+        radio_frequency: 1_000_000,
+    }));
 
-    let a_status = check_status(sat_a);
+    println!("#1 Base frequency is: {:?}", base);
 
-    let a_status = check_status(sat_a);
+    {
+        let mut base_2 = base.borrow_mut();
+        base_2.radio_frequency = 32768;
+        println!("[] Base frequency is: {:?}", base_2);
+    }
+
+    println!("#2 Base frequency is: {:?}", base);
 }
