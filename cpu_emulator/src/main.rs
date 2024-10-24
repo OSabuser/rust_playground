@@ -6,6 +6,8 @@ struct CPU {
     position_in_memory: usize,
     registers: [u8; 16],
     memory: [u8; 0x1000],
+    stack: [u16; 16],
+    stack_pointer: usize,
 }
 /// Функционал процессора
 impl CPU {
@@ -35,7 +37,9 @@ impl CPU {
             let d = ((opcode & 0x000F) >> 0) as u8;
 
             match (c, x, y, d) {
-                (0, 0, 0, 0) => {return; },
+                (0, 0, 0, 0) => {
+                    return;
+                }
                 (0x08, _, _, 0x04) => self.add_xy(x, y),
                 _ => todo!("opcode: {:04x}", opcode),
             }
@@ -63,23 +67,21 @@ fn main() {
         position_in_memory: 0,
         memory: [0; 4096],
         registers: [0; 16],
+        stack: [0; 16],
+        stack_pointer: 0,
     };
 
-    // Инициализация значениями нескольких регистров
-    cpu.registers[0] = 5;
-    cpu.registers[1] = 10;
-    cpu.registers[2] = 17;
-    cpu.registers[3] = 13;
+    let mut ram_buffer = [0_u8; 64];
+    let mem = &mut ram_buffer;
 
-    // Загрузка 3 кодов операций для последовательного выполнения
-    let mem = &mut cpu.memory;
-    mem[0] = 0x80; mem[1] = 0x14; // REG1 + REG0
-    mem[2] = 0x80; mem[3] = 0x24; // REG2 + REG0
-    mem[4] = 0x80; mem[5] = 0x34; // REG3 + REG0
 
-    cpu.run();
 
-    assert_eq!(cpu.registers[0], 45);
+    let add_twice = [0x80, 0x14, 0x80, 0x14, 0x00, 0xEE];
 
-    println!("5 + 10 + 17+ 13 = {}", cpu.registers[0]);
+    println!("0x10-0x1F memory area: 0x{:X?}", &mem[0x10..0x1F]);
+
+    mem[0x10..0x16].copy_from_slice(&add_twice);
+
+
+    println!("0x10-0x1F memory area: 0x{:X?}", &mem[0x10..0x1F]);
 }
