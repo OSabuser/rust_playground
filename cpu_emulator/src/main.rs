@@ -88,8 +88,13 @@ impl CPU {
 
 
     fn add_xy(&mut self, x: u8, y: u8) {
+
+        println!("Invoking the add_xy function:");
+        
         let arg_1 = self.registers[x as usize];
         let arg_2 = self.registers[y as usize];
+
+        println!("arg1:{}, arg2: {}", arg_1, arg_2);
 
         /* Сложение с учётом возможного переполения
          * overflow = true, если зафиксировано переполнение
