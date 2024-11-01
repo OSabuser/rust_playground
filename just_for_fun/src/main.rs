@@ -1,5 +1,5 @@
-const MAX_WIDTH_IN_PX: usize = 25;
-const MAX_HEIGHT_IN_PX: usize = 25;
+pub(crate) const MAX_WIDTH_IN_PX: usize = 1024;
+pub(crate) const MAX_HEIGHT_IN_PX: usize = 768;
 
 #[derive(Debug)]
 struct FrameBuffer {
@@ -42,7 +42,8 @@ impl FrameBuffer {
         assert!(x_pos < self.width);
         assert!(y_pos < self.height);
 
-        let pixel_position: usize = ((y_pos + 1) * self.width) - (self.width - x_pos);
+       // let pixel_position: usize = ((y_pos + 1) * self.width) - (self.width - x_pos);
+       let pixel_position: usize = x_pos + y_pos * self.width;
 
         assert!(pixel_position < self.buffer.len());
 
@@ -70,7 +71,6 @@ impl FrameBuffer {
         let mut y: isize = y_coord.0 as isize;
 
         'inf_loop: loop {
-            println!("x_pos= {}, y_pos = {}",x as usize, y as usize);
             self.draw_pixel(x as usize, y as usize);
 
             if x as usize == x_coord.1 && y as usize == y_coord.1 {
@@ -91,25 +91,56 @@ impl FrameBuffer {
         }
     }
 
-    fn draw_rect(&mut self) {
-        todo!("Not implemented yet!");
+    fn draw_rect(&mut self, x_coord: (usize, usize), y_coord: (usize, usize)) {
+
+        self.draw_line((x_coord.0, x_coord.1), (y_coord.0, y_coord.0)); // Top line
+        self.draw_line((x_coord.0, x_coord.1), (y_coord.1, y_coord.1)); // Bottom line
+
+        self.draw_line((x_coord.0, x_coord.0), (y_coord.0, y_coord.1)); // Left line
+        self.draw_line((x_coord.1, x_coord.1), (y_coord.0, y_coord.1)); // Right line
+
     }
 
-    fn fill_rect(&mut self) {
-        todo!("Not implemented yet!");
+    fn fill_rect(&mut self, x_coord: (usize, usize), y_coord: (usize, usize), value: u8) {
+        // Check whether line coordinates are correct or not
+        assert!((0..self.width).contains(&x_coord.0));
+        assert!((0..self.width).contains(&x_coord.1));
+        assert!((0..self.height).contains(&y_coord.0));
+        assert!((0..self.height).contains(&y_coord.1));
+
+
+    
+        for row in y_coord.0..=y_coord.1 {
+            let lower_bound = x_coord.0 + row*self.width;
+            let higher_bound = x_coord.1 + row*self.width ;
+
+            println!("Row value is {row}");
+            self.buffer[lower_bound..=higher_bound].fill(value);
+
+            
+        }
+        
+
     }
+
+
+    fn fill_buffer(&mut self, value: u8) {
+        self.buffer = vec![value; self.width * self.height];
+    }
+
+
 }
 
 fn main() {
-    let mut tft_display = FrameBuffer::new(25, 25);
+    let mut tft_display = FrameBuffer::new(10, 10);
 
     println!(
         "The framebuffer has been created: {}x{} px",
         tft_display.width, tft_display.height
     );
 
+    tft_display.fill_rect((0, tft_display.width - 1), (0, tft_display.height - 1), 1);
     tft_display.show_buffer();
 
-    tft_display.draw_line((0, 15), (1, 5));
-    tft_display.show_buffer();
+    
 }
