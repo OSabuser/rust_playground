@@ -1,6 +1,0 @@
-[package]
-name = "just_for_fun"
-version = "0.1.0"
-edition = "2021"
-
-[dependencies]
