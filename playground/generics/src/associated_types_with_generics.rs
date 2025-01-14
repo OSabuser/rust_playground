@@ -72,7 +72,7 @@ fn play_with_pet<T: Pet>(exe: &T) {
     println!("Calling a pet...");
     T::say_hello();
 
-    exe.say_test()
+    exe.say_test();
 
     let toy = exe.get_toy();
 
