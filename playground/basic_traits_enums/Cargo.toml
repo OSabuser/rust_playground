@@ -1,5 +1,5 @@
 [package]
-name = "crate_example"
+name = "basic_traits_enums"
 version = "0.1.0"
 edition = "2021"
 
