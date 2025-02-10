@@ -100,6 +100,12 @@ enum LoginError {
     UserNotFound,
 }
 
+#[derive(Debug)]
+enum DataError {
+    PermissionRequired,
+    DataNotFound,
+}
+
 impl From<LoginError> for AccessError {
     fn from(err: LoginError) -> Self {
         AccessError::Login(err)
@@ -113,11 +119,7 @@ impl From<DataError> for AccessError {
     }
 }
 
-#[derive(Debug)]
-enum DataError {
-    PermissionRequired,
-    DataNotFound,
-}
+
 
 impl Error for AccessError {
     fn source(&self) -> Option<&(dyn Error + 'static)> {
